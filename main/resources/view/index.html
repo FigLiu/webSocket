@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<!--<script src="/static/sockjs.min.js"/>-->
+<!--<script src="/static/stomp.min.js"/>-->
+<script language="javascript" type="text/javascript">
+
+    var wsUri ="ws://localhost:8081/";
+    var output;
+
+    function init() {
+        output = document.getElementById("output");
+    }
+
+    function testWebSocket() {
+        writeToScreen("-------------------------------------------------------");
+        writeToScreen("连接到："+wsUri+document.getElementById('i0').value);
+        websocket = new WebSocket(wsUri+document.getElementById('i0').value);
+        //var sockjs = new SockJS("http://192.168.20.128:8081/server");
+        //var stompCilent = Stomp.over(sockjs);
+        //stompCilent.send("/server",{},"sockjs");
+
+        websocket.onopen = function(evt) {
+            onOpen(evt)
+        };
+        websocket.onclose = function(evt) {
+            onClose(evt)
+        };
+        websocket.onmessage = function(evt) {
+            onMessage(evt)
+        };
+        websocket.onerror = function(evt) {
+            onError(evt)
+        };
+    }
+
+    function onOpen(evt) {
+        writeToScreen("CONNECTED");
+        doSend("WebSocket rocks");
+    }
+
+    function onClose(evt) {
+        writeToScreen("DISCONNECTED");
+    }
+
+    function onMessage(evt) {
+        writeToScreen('<span style="color: blue;">RESPONSE: '+ evt.data+'</span>');
+        //websocket.close();
+    }
+
+    function onError(evt) {
+        writeToScreen('<span style="color: red;">ERROR:</span> '+ evt.data);
+    }
+
+    function doSend(message) {
+        writeToScreen("SENT: " + message);
+        websocket.send(message);
+    }
+
+    function writeToScreen(message) {
+        var pre = document.createElement("p");
+        pre.style.wordWrap = "break-word";
+        pre.innerHTML = message;
+        output.appendChild(pre);
+    };
+
+    function clickB1(){
+        var i1 = document.getElementById('i1');
+        doSend(i1.value);
+    }
+
+    function clickB2(){
+        var i2 = document.getElementById('i2');
+        doSend(i2.value);
+    }
+
+    window.addEventListener("load", init, false);
+</script>
+<body>
+<h2>WebSocket Test</h2>
+<div id="output"></div>
+<div>
+    <input id="i0"/>
+    <button id="b0" onclick="javascript:testWebSocket()">点击连接</button>
+    <input id="i1"/>
+    <button id="b1" onclick="javascript:clickB1()">b1</button>
+    <input id="i2"/>
+    <button id="b2" onclick="javascript:clickB2()">b2</button>
+</div>
+</body>
+</html>
